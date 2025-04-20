@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Editor</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎮</text></svg>"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #1f2937; /* gray-900 */
+        color: white;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background-color: #374151; /* gray-800 */
+        padding: 0.5rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      header button {
+        background-color: #3b82f6;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        color: white;
+        cursor: pointer;
+      }
+
+      header button:hover {
+        background-color: #2563eb;
+      }
+
+      .main-layout {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+
+      aside {
+        background-color: #374151; /* gray-700 */
+        padding: 1rem;
+        width: 15%; /* Reduced from 20% to accommodate 70% main area */
+        min-width: 180px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+
+      aside h2 {
+        font-weight: bold;
+        font-size: 1.125rem;
+        margin-bottom: 1rem;
+      }
+
+      .model-list li {
+        list-style: none;
+        margin: 0.5rem 0;
+        padding: 0.5rem;
+        background-color: #4b5563; /* gray-600 */
+        border-radius: 0.5rem;
+        cursor: pointer;
+      }
+
+      .model-list li:hover {
+        background-color: #6b7280;
+      }
+
+      .model-list li.active {
+        background-color: #3b82f6;
+      }
+
+      main {
+        width: 70%; /* Changed from 60% to 70% */
+        height: 100%; /* Take full height of container */
+        display: flex;
+        flex-direction: column;
+        background-color: #1f2937;
+        align-items: center; /* Center the content horizontally */
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+
+      .canvas-area {
+        width: 100%; /* Take full width of the main section */
+        max-width: 1280px;
+        aspect-ratio: 16/9; /* Maintain a 16:9 aspect ratio */
+        background-color: #374151;
+        margin: 0.5rem 0;
+        border-radius: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        flex-grow: 1; /* Allow canvas to grow to fill available space */
+      }
+
+      .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        display: none;
+      }
+
+      .loading-spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3b82f6;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+        background: #111;
+      }
+
+      .bottom-bar {
+        width: 100%; /* Take full width of the main section */
+        max-width: 1280px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background-color: #374151;
+        border-top: 1px solid #4b5563;
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+      }
+
+      .bottom-bar button {
+        background-color: #3b82f6;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        color: white;
+        margin-right: 0.5rem;
+        cursor: pointer;
+      }
+
+      .bottom-bar button:hover {
+        background-color: #2563eb;
+      }
+
+      .bottom-bar button.active {
+        background-color: #1d4ed8;
+        box-shadow: 0 0 0 2px white;
+      }
+
+      .bottom-bar .export {
+        background-color: #10b981;
+      }
+
+      .bottom-bar .export:hover {
+        background-color: #059669;
+      }
+
+      .settings select,
+      .settings label {
+        width: 100%;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background-color: #1f2937;
+        color: white;
+        border: 1px solid #4b5563;
+      }
+
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 24px;
+        margin-right: 0.5rem;
+      }
+
+      .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #4b5563;
+        border-radius: 24px;
+        transition: 0.4s;
+      }
+
+      .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.4s;
+      }
+
+      input:checked + .toggle-slider {
+        background-color: #3b82f6;
+      }
+
+      input:checked + .toggle-slider:before {
+        transform: translateX(16px);
+      }
+    </style>
+    <!-- Import map setup script -->
+    <script src="./importmap.js"></script>
+
+    <!-- Preload Three.js to avoid module resolution issues -->
+    <script type="module">
+      // Pre-import Three.js to handle any bare imports correctly
+      import THREE from "three";
+      window.THREE = THREE; // Make THREE available globally if needed
+      console.log("THREE.js loaded globally:", THREE.REVISION);
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Project Editor</h1>
+      <button id="save-button">Save Project</button>
+    </header>
+
+    <div class="main-layout">
+      <!-- Left Sidebar -->
+      <aside>
+        <h2>Models</h2>
+        <ul class="model-list" id="model-list">
+          <li class="active" data-model="default">Default</li>
+          <li data-model="humanoid">Humanoid</li>
+          <li data-model="robot">Robot</li>
+          <li data-model="environment">Environment</li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main>
+        <div class="canvas-area">
+          <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div id="loading-text">Loading model...</div>
+          </div>
+          <canvas id="main-canvas"></canvas>
+        </div>
+
+        <div class="bottom-bar">
+          <div>
+            <button id="play-button">Play</button>
+            <button id="pause-button">Pause</button>
+            <button id="frame-button">Frame</button>
+          </div>
+          <button class="export" id="export-button">Export</button>
+        </div>
+      </main>
+
+      <!-- Right Sidebar -->
+      <aside class="settings">
+        <h2>Settings</h2>
+
+        <div class="toggle-container">
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-shadows" checked />
+            <span class="toggle-slider"></span>
+          </label>
+          <span>Shadows</span>
+        </div>
+
+        <div class="toggle-container">
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-grid" checked />
+            <span class="toggle-slider"></span>
+          </label>
+          <span>Grid</span>
+        </div>
+
+        <label>
+          Aspect Ratio
+          <select id="aspect-ratio">
+            <option value="16:9">16:9</option>
+            <option value="4:3">4:3</option>
+            <option value="1:1">1:1</option>
+            <option value="9:16">9:16</option>
+          </select>
+        </label>
+
+        <label>
+          Resolution
+          <select id="resolution">
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+          </select>
+        </label>
+
+        <label>
+          Frame Rate
+          <select id="frame-rate">
+            <option value="60">60 FPS</option>
+            <option value="30">30 FPS</option>
+            <option value="24">24 FPS</option>
+          </select>
+        </label>
+
+        <label>
+          Camera View
+          <select id="camera-view">
+            <option value="perspective">Perspective</option>
+            <option value="front">Front</option>
+            <option value="side">Side</option>
+            <option value="top">Top</option>
+          </select>
+        </label>
+      </aside>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script type="module" src="./canva.js"></script>
+    <script type="module" src="./glb-model.js"></script>
+    <script type="module">
+      // UI control script
+      import { scene, camera, renderer, controls } from "./canva.js";
+
+      // Wait for DOM to be fully loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        // Get UI elements
+        const saveButton = document.getElementById("save-button");
+        const playButton = document.getElementById("play-button");
+        const pauseButton = document.getElementById("pause-button");
+        const frameButton = document.getElementById("frame-button");
+        const exportButton = document.getElementById("export-button");
+        const toggleShadows = document.getElementById("toggle-shadows");
+        const toggleGrid = document.getElementById("toggle-grid");
+        const aspectRatio = document.getElementById("aspect-ratio");
+        const resolution = document.getElementById("resolution");
+        const frameRate = document.getElementById("frame-rate");
+        const cameraView = document.getElementById("camera-view");
+        const modelList = document.getElementById("model-list");
+        const loadingOverlay = document.getElementById("loading-overlay");
+        const canvas = document.getElementById("main-canvas");
+
+        // Adjust canvas size on aspect ratio change
+        aspectRatio.addEventListener("change", (e) => {
+          console.log("Aspect Ratio:", e.target.value);
+          const canvasArea = document.querySelector(".canvas-area");
+
+          switch (e.target.value) {
+            case "16:9":
+              canvasArea.style.aspectRatio = "16/9";
+              break;
+            case "4:3":
+              canvasArea.style.aspectRatio = "4/3";
+              break;
+            case "1:1":
+              canvasArea.style.aspectRatio = "1/1";
+              break;
+            case "9:16":
+              canvasArea.style.aspectRatio = "9/16";
+              break;
+          }
+
+          // Update renderer and camera
+          setTimeout(() => {
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          }, 100);
+        });
+
+        // Add event listeners
+        saveButton.addEventListener("click", () => {
+          alert("Project saved successfully!");
+        });
+
+        playButton.addEventListener("click", () => {
+          console.log("Animation playing");
+          playButton.classList.add("active");
+          pauseButton.classList.remove("active");
+        });
+
+        pauseButton.addEventListener("click", () => {
+          console.log("Animation paused");
+          pauseButton.classList.add("active");
+          playButton.classList.remove("active");
+        });
+
+        frameButton.addEventListener("click", () => {
+          console.log("Advance one frame");
+        });
+
+        exportButton.addEventListener("click", () => {
+          alert("Model exported successfully!");
+        });
+
+        toggleShadows.addEventListener("change", (e) => {
+          console.log("Shadows:", e.target.checked);
+          renderer.shadowMap.enabled = e.target.checked;
+
+          // Update all objects in the scene
+          scene.traverse((object) => {
+            if (object.isMesh) {
+              object.castShadow = e.target.checked;
+              object.receiveShadow = e.target.checked;
+            }
+          });
+        });
+
+        toggleGrid.addEventListener("change", (e) => {
+          console.log("Grid:", e.target.checked);
+          // Find the grid in the scene
+          scene.traverse((object) => {
+            if (object.isGridHelper) {
+              object.visible = e.target.checked;
+            }
+          });
+        });
+
+        resolution.addEventListener("change", (e) => {
+          console.log("Resolution:", e.target.value);
+          // Adjust canvas resolution (simulation only)
+          switch (e.target.value) {
+            case "1080p":
+              renderer.setPixelRatio(window.devicePixelRatio * 1.0);
+              break;
+            case "720p":
+              renderer.setPixelRatio(window.devicePixelRatio * 0.67);
+              break;
+            case "480p":
+              renderer.setPixelRatio(window.devicePixelRatio * 0.44);
+              break;
+          }
+        });
+
+        frameRate.addEventListener("change", (e) => {
+          console.log("Frame Rate:", e.target.value);
+          // This would usually adjust the animation frame rate
+        });
+
+        cameraView.addEventListener("change", (e) => {
+          console.log("Camera view:", e.target.value);
+          switch (e.target.value) {
+            case "perspective":
+              camera.position.set(3, 8, 10);
+              break;
+            case "front":
+              camera.position.set(0, 2, 15);
+              break;
+            case "side":
+              camera.position.set(15, 2, 0);
+              break;
+            case "top":
+              camera.position.set(0, 15, 0);
+              break;
+          }
+          controls.target.set(0, 2, 0);
+          controls.update();
+        });
+
+        // Model list selection
+        modelList.addEventListener("click", (e) => {
+          if (e.target.tagName === "LI") {
+            // Remove active class from all items
+            document.querySelectorAll("#model-list li").forEach((li) => {
+              li.classList.remove("active");
+            });
+
+            // Add active class to clicked item
+            e.target.classList.add("active");
+
+            // Get model name
+            const modelName = e.target.dataset.model;
+            console.log("Selected model:", modelName);
+
+            // Show loading overlay
+            loadingOverlay.style.display = "flex";
+
+            // Simulate loading delay
+            setTimeout(() => {
+              loadingOverlay.style.display = "none";
+            }, 1500);
+          }
+        });
+
+        // Initial renderer resize to match canvas
+        setTimeout(() => {
+          renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          camera.updateProjectionMatrix();
+        }, 100);
+
+        // Handle window resize
+        window.addEventListener("resize", () => {
+          setTimeout(() => {
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            camera.aspect = canvas.clientWidth / canvas.clientHeight;
+            camera.updateProjectionMatrix();
+          }, 100);
+        });
+      });
+    </script>
+  </body>
+</html>

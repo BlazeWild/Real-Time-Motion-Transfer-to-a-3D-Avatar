@@ -1,0 +1,95 @@
+# Python-specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+backend_process/dependencies/
+venv/
+ENV/
+env/
+
+# Models and large files
+*.pth
+*.h5
+*.onnx
+*.pt
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debug and cache
+.pytest_cache/
+.coverage
+.coverage.*
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# Sensitive information
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.local
+
+# Frontend development
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+
+# Media files (if not part of the repo)
+# *.mp4
+# *.avi
+# *.mov
+
+# Keep the keypoints.json file as it's essential for the application
+!frontend_dis/keypoints.json
+
+# Generated files
+.npm
+.eslintcache
+
+# Windows-specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Output folders
+_output/
+output/
+
+# Screenshot files
+pose_screenshot_*.jpg 
