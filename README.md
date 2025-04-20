@@ -4,7 +4,16 @@ A complete system for capturing human motion from webcam or video and transferri
 
 Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://github.com/nepalashim)
 
-![Pose Detection](images/posedetect.png)
+## Demo
+
+<div align="center">
+  <a href="https://github.com/BlazeWild/Real-Time-Motion-Transfer-to-a-3D-Avatar/blob/main/demo/demo.mp4">
+    <img src="demo/UI.png" alt="Demo Video (Click to Play)" width="700">
+  </a>
+  <p>👆 Click on the image above to watch the demo video</p>
+</div>
+
+The system detects body movements from webcam or video input and transfers them in real-time to a 3D avatar. You can use your own ReadyPlayerMe avatar and switch between webcam and video file inputs.
 
 ## Features
 
@@ -16,8 +25,6 @@ Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://gi
 - Real-time motion transfer to 3D avatar models
 - WebSocket communication between detection and visualization components
 - Video or webcam input options with easy configuration
-
-![User Interface](images/UI.png)
 
 ## System Requirements
 
