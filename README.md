@@ -7,10 +7,9 @@ Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://gi
 ## Demo
 
 <div align="center">
-  <a href="https://github.com/BlazeWild/Real-Time-Motion-Transfer-to-a-3D-Avatar/blob/main/demo/demo.mp4">
-    <img src="demo/UI.png" alt="Demo Video (Click to Play)" width="700">
+  <a href="https://github.com/BlazeWild/Real-Time-Motion-Transfer-to-a-3D-Avatar/blob/main/.github/assets/demo/demo.mp4">
+    <p>👆 Click here to watch the demo video</p>
   </a>
-  <p>👆 Click on the image above to watch the demo video</p>
 </div>
 
 The system detects body movements from webcam or video input and transfers them in real-time to a 3D avatar. You can use your own ReadyPlayerMe avatar and switch between webcam and video file inputs.
