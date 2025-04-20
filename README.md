@@ -1,8 +1,8 @@
 # Real-Time 3D Motion Transfer to Avatar
 
-A complete system for capturing human motion from webcam or video and transferring it to a 3D avatar in real-time using MediaPipe,NN and Three.js.
+A complete system for capturing human motion from webcam or video and transferring it to a 3D avatar in real-time using MediaPipe, DNN and Three.js.
 
-Created by [Ashok BK](https://github.com/username)
+Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://github.com/nepalashim)
 
 ![Pose Detection](images/posedetect.png)
 
@@ -218,15 +218,15 @@ If you want to manage your own version of this project using Git:
 
 The system processes motion in several stages:
 
-1. **MediaPipe Pose Detection**: Captures 33 body landmarks using Google's MediaPipe library
+1. **MediaPipe Pose Detection**: Captures 33 pose world landmarks using Google's MediaPipe/Blazepose library
 2. **Landmark Selection**: Extracts 12 essential keypoints from the 33 MediaPipe landmarks:
    - Shoulders, elbows, wrists
    - Hips, knees, ankles
-3. **DNN Correction**: Applies a neural network to correct and refine keypoint positions
-4. **17-Keypoint Mapping**: Creates a full skeleton by:
+3. **DNN Correction**: Applies a neural network to correct and refine keypoint positions for accurate depth
+4. **Orientation Enrichment**: Calculates local quaternion for 8 joints to apply the longitudinal rotation
+5. **17-Keypoint Mapping**: Creates a full skeleton by:
    - Adding calculated joints (hips center, spine, neck)
    - Organizing joints in a standard hierarchy
-5. **Orientation Enrichment**: Calculates rotational information for each joint
 6. **Kalman Filtering**: Applies statistical smoothing to reduce jitter and improve motion quality
 7. **3D Model Animation**: Transfers processed joint rotations to the avatar's skeleton
 
