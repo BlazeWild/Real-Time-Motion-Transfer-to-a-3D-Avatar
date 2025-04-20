@@ -1,0 +1,113 @@
+/* Video preview panel styles */
+.preview-panel {
+  width: 30%;
+  background-color: #2c2c2c;
+  border-left: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.preview-panel h2 {
+  padding: 15px;
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+  border-bottom: 1px solid #444;
+  background-color: #1c1c1c;
+}
+
+.video-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  overflow: hidden;
+}
+
+.video-preview {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 5px;
+  background-color: #333;
+  margin-bottom: 15px;
+}
+
+.status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-green {
+  background-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.7);
+}
+
+.status-red {
+  background-color: #f44336;
+  box-shadow: 0 0 5px rgba(244, 67, 54, 0.7);
+}
+
+.status-text {
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Main container changes to support preview panel */
+.container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+.main-panel {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .main-panel {
+    width: 60%;
+  }
+
+  .preview-panel {
+    width: 40%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .main-panel,
+  .preview-panel {
+    width: 100%;
+    height: auto;
+  }
+
+  .preview-panel {
+    border-left: none;
+    border-top: 1px solid #444;
+    max-height: 40vh;
+  }
+}

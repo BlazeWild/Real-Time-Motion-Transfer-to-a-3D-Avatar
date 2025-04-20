@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Project Editor</title>
     <link
       rel="icon"
@@ -17,6 +23,8 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
+        width: 100%;
+        overflow-x: hidden; /* Prevent horizontal scrolling */
       }
 
       header {
@@ -49,30 +57,33 @@
         flex: 1;
         display: flex;
         overflow: hidden;
+        width: 100%;
       }
 
       aside {
         background-color: #374151; /* gray-700 */
-        padding: 1rem;
-        width: 15%; /* Reduced from 20% to accommodate 70% main area */
-        min-width: 180px;
+        padding: 0.75rem;
+        width: 8%; /* Reduced from 10% */
+        min-width: 110px;
         box-sizing: border-box;
         overflow-y: auto;
+        flex-shrink: 0; /* Prevent shrinking */
       }
 
       aside h2 {
         font-weight: bold;
-        font-size: 1.125rem;
-        margin-bottom: 1rem;
+        font-size: 1rem; /* Smaller font size */
+        margin-bottom: 0.75rem;
       }
 
       .model-list li {
         list-style: none;
-        margin: 0.5rem 0;
-        padding: 0.5rem;
+        margin: 0.4rem 0; /* Smaller margins */
+        padding: 0.4rem;
         background-color: #4b5563; /* gray-600 */
-        border-radius: 0.5rem;
+        border-radius: 0.25rem; /* Smaller radius */
         cursor: pointer;
+        font-size: 0.9rem; /* Smaller font */
       }
 
       .model-list li:hover {
@@ -83,30 +94,109 @@
         background-color: #3b82f6;
       }
 
+      /* Main content area */
       main {
-        width: 70%; /* Changed from 60% to 70% */
-        height: 100%; /* Take full height of container */
+        width: 60%; /* Increased from 47% */
+        height: 100%;
         display: flex;
         flex-direction: column;
         background-color: #1f2937;
-        align-items: center; /* Center the content horizontally */
-        padding: 1rem;
+        align-items: center;
+        padding: 0.75rem;
         box-sizing: border-box;
       }
 
+      /* Video preview panel - slightly reduced width */
+      .preview-panel {
+        width: 25%; /* Reduced from 37% */
+        height: 100%;
+        background-color: #1f2937;
+        display: flex;
+        flex-direction: column;
+        padding: 0.75rem;
+        box-sizing: border-box;
+        overflow: auto;
+      }
+
+      /* Now the widths add up to exactly 100%:
+         8% (left sidebar) + 49% (main) + 35% (video) + 8% (right sidebar) = 100% */
+
+      /* Video panel styling */
+      .preview-panel h2 {
+        font-weight: bold;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        text-align: center;
+        color: #e5e7eb;
+        border-bottom: 1px solid #374151;
+        padding-bottom: 0.5rem;
+      }
+
+      /* Taller video preview container with portrait orientation */
+      .video-container {
+        width: 100%;
+        aspect-ratio: 3/5; /* Portrait orientation */
+        max-height: 70vh; /* Limit maximum height to 70% of viewport height */
+        min-height: 400px; /* Ensure minimum height */
+        background-color: #111827;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        position: relative;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      /* Video preview image */
+      #video-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Preserve aspect ratio */
+        background-color: #111;
+        max-height: none; /* Remove any max-height constraints */
+      }
+
+      /* Video status indicators - more compact */
+      .status-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.4rem; /* Slightly smaller margin */
+        font-size: 0.875rem;
+        background-color: #1a1f2b;
+        padding: 0.3rem 0.5rem; /* Slightly smaller padding */
+        border-radius: 0.25rem;
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+
+      .status-green {
+        background-color: #10b981;
+      }
+
+      .status-red {
+        background-color: #ef4444;
+      }
+
+      /* Canvas area - balanced */
       .canvas-area {
-        width: 100%; /* Take full width of the main section */
+        width: 100%;
         max-width: 1280px;
-        aspect-ratio: 16/9; /* Maintain a 16:9 aspect ratio */
+        aspect-ratio: 16/9;
         background-color: #374151;
-        margin: 0.5rem 0;
+        margin: 0.4rem 0; /* Smaller margins */
         border-radius: 0.25rem;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
         position: relative;
-        flex-grow: 1; /* Allow canvas to grow to fill available space */
+        flex-grow: 1; /* Let it fill available space */
       }
 
       .loading-overlay {
@@ -149,18 +239,19 @@
         background: #111;
       }
 
+      /* Bottom bar - more compact */
       .bottom-bar {
-        width: 100%; /* Take full width of the main section */
+        width: 100%;
         max-width: 1280px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem;
+        padding: 0.75rem; /* Reduced padding */
         background-color: #374151;
         border-top: 1px solid #4b5563;
         border-bottom-left-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem; /* Reduced margin */
         box-sizing: border-box;
       }
 
@@ -194,12 +285,13 @@
       .settings select,
       .settings label {
         width: 100%;
-        margin-bottom: 1rem;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
+        margin-bottom: 0.75rem; /* Smaller margin */
+        padding: 0.4rem; /* Smaller padding */
+        border-radius: 0.25rem;
         background-color: #1f2937;
         color: white;
         border: 1px solid #4b5563;
+        font-size: 0.9rem; /* Smaller font */
       }
 
       .toggle-container {
@@ -253,9 +345,20 @@
       input:checked + .toggle-slider:before {
         transform: translateX(16px);
       }
+
+      /* Right sidebar (settings) - smaller */
+      aside.settings {
+        width: 8%; /* Reduced from 10% */
+        min-width: 110px;
+        padding: 0.75rem;
+        flex-shrink: 0; /* Prevent shrinking */
+      }
     </style>
     <!-- Import map setup script -->
     <script src="./importmap.js"></script>
+
+    <!-- Live reload script for auto-refresh -->
+    <script src="./live-reload.js"></script>
 
     <!-- Preload Three.js to avoid module resolution issues -->
     <script type="module">
@@ -263,6 +366,22 @@
       import THREE from "three";
       window.THREE = THREE; // Make THREE available globally if needed
       console.log("THREE.js loaded globally:", THREE.REVISION);
+    </script>
+
+    <!-- Auto refresh script -->
+    <script>
+      // Auto refresh when needed
+      window.addEventListener("focus", function () {
+        // Refresh the page when it receives focus after being inactive
+        if (window.wasInactive) {
+          console.log("Window regained focus, refreshing...");
+          location.reload();
+        }
+      });
+
+      window.addEventListener("blur", function () {
+        window.wasInactive = true;
+      });
     </script>
   </head>
   <body>
@@ -298,10 +417,40 @@
             <button id="play-button">Play</button>
             <button id="pause-button">Pause</button>
             <button id="frame-button">Frame</button>
+            <span
+              id="dnn-status"
+              style="
+                margin-left: 15px;
+                padding: 5px 10px;
+                background-color: #3b82f6;
+                border-radius: 5px;
+              "
+              >DNN: ON</span
+            >
           </div>
           <button class="export" id="export-button">Export</button>
         </div>
       </main>
+
+      <!-- Video Preview Panel (Right Side) -->
+      <div class="preview-panel">
+        <h2>Video Feed</h2>
+        <div class="video-container">
+          <img
+            id="video-preview"
+            alt="MediaPipe and Keypoints Preview"
+            src="placeholder.jpg"
+          />
+        </div>
+        <div class="status-container">
+          <span class="status-indicator" id="connection-status"></span>
+          <span id="connection-text">Connecting...</span>
+        </div>
+        <div class="status-container">
+          <span class="status-indicator" id="keypoint-status"></span>
+          <span id="keypoint-text">No keypoints</span>
+        </div>
+      </div>
 
       <!-- Right Sidebar -->
       <aside class="settings">
@@ -387,6 +536,123 @@
         const modelList = document.getElementById("model-list");
         const loadingOverlay = document.getElementById("loading-overlay");
         const canvas = document.getElementById("main-canvas");
+
+        // Video preview elements
+        const videoPreview = document.getElementById("video-preview");
+        const connectionStatus = document.getElementById("connection-status");
+        const connectionText = document.getElementById("connection-text");
+        const keypointStatus = document.getElementById("keypoint-status");
+        const keypointText = document.getElementById("keypoint-text");
+
+        // Video feed variables
+        let videoStream = null;
+        let lastKeypointUpdate = 0;
+
+        // Function to set up the video feed
+        function setupVideoFeed() {
+          try {
+            // Initialize with placeholder until we connect
+            videoPreview.src =
+              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='18' fill='white' text-anchor='middle' dominant-baseline='middle'%3EConnecting to video feed...%3C/text%3E%3C/svg%3E";
+
+            // Update status indicators
+            connectionStatus.className = "status-indicator status-yellow";
+            connectionText.textContent = "Connecting...";
+
+            // Create a WebSocket for video frames
+            const videoWs = new WebSocket("ws://localhost:8766");
+
+            videoWs.onopen = () => {
+              console.log("Connected to video WebSocket!");
+              connectionStatus.className = "status-indicator status-green";
+              connectionText.textContent = "Connected";
+
+              // Add note about live video feed
+              const noteDiv = document.createElement("div");
+              noteDiv.className = "connection-note";
+              noteDiv.innerHTML = "Live video feed from MediaPipe processing";
+              noteDiv.style.fontSize = "12px";
+              noteDiv.style.marginTop = "10px";
+              noteDiv.style.color = "#aaa";
+
+              // Insert note if doesn't exist
+              const videoContainer = document.querySelector(".video-container");
+              if (
+                videoContainer &&
+                !document.querySelector(".connection-note")
+              ) {
+                videoContainer.parentNode.insertBefore(
+                  noteDiv,
+                  videoContainer.nextSibling
+                );
+              }
+            };
+
+            // Handle video data updates
+            videoWs.onmessage = (event) => {
+              try {
+                const data = JSON.parse(event.data);
+                if (data.image) {
+                  // Update the image with the base64 data
+                  videoPreview.src = "data:image/jpeg;base64," + data.image;
+
+                  // Update keypoint status
+                  keypointStatus.className = "status-indicator status-green";
+                  lastKeypointUpdate = Date.now();
+                  keypointText.textContent = "Keypoints active";
+                }
+              } catch (error) {
+                console.error("Error processing video frame:", error);
+              }
+            };
+
+            // Handle connection errors
+            videoWs.onerror = (error) => {
+              console.error("Video WebSocket error:", error);
+              fallbackToStaticMessage();
+            };
+
+            // Handle connection close
+            videoWs.onclose = () => {
+              console.log("Video WebSocket closed");
+              fallbackToStaticMessage();
+
+              // Try to reconnect after delay
+              setTimeout(setupVideoFeed, 5000);
+            };
+
+            // Function to show fallback message when connection fails
+            function fallbackToStaticMessage() {
+              connectionStatus.className = "status-indicator status-red";
+              connectionText.textContent = "Disconnected";
+
+              // Show fallback message
+              videoPreview.src =
+                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%23333'/%3E%3Ctext x='50%25' y='40%25' font-family='Arial' font-size='18' fill='white' text-anchor='middle' dominant-baseline='middle'%3EMediaPipe Preview%3C/text%3E%3Ctext x='50%25' y='55%25' font-family='Arial' font-size='14' fill='%23aaa' text-anchor='middle' dominant-baseline='middle'%3EConnection to video feed failed%3C/text%3E%3Ctext x='50%25' y='65%25' font-family='Arial' font-size='14' fill='%23aaa' text-anchor='middle' dominant-baseline='middle'%3ERetrying connection...%3C/text%3E%3Ctext x='50%25' y='80%25' font-family='Arial' font-size='12' fill='%23aaa' text-anchor='middle' dominant-baseline='middle'%3EThe video feed is also available in%3C/text%3E%3Ctext x='50%25' y='87%25' font-family='Arial' font-size='12' fill='%23aaa' text-anchor='middle' dominant-baseline='middle'%3Ethe MediaPipe window%3C/text%3E%3C/svg%3E";
+
+              keypointStatus.className = "status-indicator status-yellow";
+              keypointText.textContent = "Waiting for connection";
+            }
+
+            // Check for keypoint updates
+            setInterval(() => {
+              if (
+                Date.now() - lastKeypointUpdate > 5000 &&
+                connectionStatus.className.includes("green")
+              ) {
+                keypointStatus.className = "status-indicator status-yellow";
+                keypointText.textContent = "No recent updates";
+              }
+            }, 1000);
+          } catch (error) {
+            console.error("Error setting up video feed:", error);
+            connectionStatus.className = "status-indicator status-red";
+            connectionText.textContent = "Error";
+          }
+        }
+
+        // Initialize video feed
+        setupVideoFeed();
 
         // Adjust canvas size on aspect ratio change
         aspectRatio.addEventListener("change", (e) => {

@@ -1,21 +1,21 @@
 # Real-Time 3D Motion Transfer to Avatar
 
-A complete system for capturing human motion from webcam and transferring it to a 3D avatar in real-time.
+A complete system for capturing human motion from webcam or video and transferring it to a 3D avatar in real-time using MediaPipe,NN and Three.js.
 
-Created by [AShok BK](https://github.com/username) and [github.com/username2](https://github.com/username2)
+Created by [Ashok BK](https://github.com/username)
 
 ![Pose Detection](images/posedetect.png)
 
 ## Features
 
-- Real-time webcam pose detection using MediaPipe
+- Real-time pose detection from webcam or video file input
 - Custom DNN model for pose correction and refinement
 - 17-keypoint skeleton mapping from detected landmarks
 - Kalman filtering for smoother motion
 - 3D visualization using Three.js
 - Real-time motion transfer to 3D avatar models
 - WebSocket communication between detection and visualization components
-- Vertical display layout showing both MediaPipe output and processed skeleton
+- Video or webcam input options with easy configuration
 
 ![User Interface](images/UI.png)
 
@@ -24,7 +24,8 @@ Created by [AShok BK](https://github.com/username) and [github.com/username2](ht
 - Python 3.8+ with pip
 - Web browser with WebGL support
 - VS Code with Live Server extension (recommended for frontend)
-- Webcam with clear view of your body
+- Webcam (for live capture) or video files (for pre-recorded motion)
+- Internet connection (for loading avatar models)
 
 ## Installation
 
@@ -70,15 +71,26 @@ Created by [AShok BK](https://github.com/username) and [github.com/username2](ht
    run.bat
    ```
 
-2. This will:
+2. Choose your input source:
 
-   - Activate the virtual environment in backend_process/dependencies
-   - Install required dependencies
+   - Option 1: Webcam (default)
+   - Option 2: Video file (you can provide just the video name like "video" and the system will find it automatically)
+
+3. For video files, you can configure:
+
+   - Playback speed (delay between frames)
+   - Looping options
+   - Frame rate for processing
+   - Debug mode for better model updates
+
+4. The system will:
+
+   - Activate the virtual environment
    - Start the Python backend for pose detection
    - Open the frontend file in VS Code
    - Provide instructions for opening with Live Server
 
-3. Follow the on-screen instructions to open the frontend with Live Server
+5. In VS Code, right-click on `frontend_dis/index.html` and select "Open with Live Server"
 
 ## Manual Startup
 
@@ -98,27 +110,98 @@ Created by [AShok BK](https://github.com/username) and [github.com/username2](ht
 
 2. Start the Python backend:
 
+   For webcam:
+
    ```
    python backend_process/scripts/capture.py
    ```
 
-   This will start:
+   For video file:
 
-   - The webcam capture and pose detection
-   - The WebSocket server for communicating with the frontend
+   ```
+   python backend_process/scripts/capture.py --video "path_to_video.mp4" --delay 1 --frame-rate 30
+   ```
 
 3. Serve the frontend:
 
    - Using VS Code Live Server: Right-click on `frontend_dis/index.html` and select "Open with Live Server"
    - Or using Python's built-in server: `python -m http.server 8000 --directory frontend_dis`
 
-4. Open your browser and navigate to:
-   - Live Server: Usually `http://127.0.0.1:5500/frontend_dis/index.html`
-   - Python server: `http://localhost:8000/`
+## Using Your Own 3D Avatar
+
+You can easily use your own custom avatar from ReadyPlayerMe:
+
+1. Visit [ReadyPlayerMe](https://readyplayer.me/) and create your custom avatar
+2. After creating your avatar, click "Download" and choose "glTF/GLB"
+3. You can also just copy the URL from the share link (ends with .glb)
+4. Open `frontend_dis/glb-model.js` in a text editor
+5. Find line 45 with: `const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";`
+6. Replace the URL with your avatar's URL
+7. Save the file and refresh the browser window
+
+Example:
+
+```javascript
+// Replace this
+const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";
+
+// With your avatar URL
+const modelPath = "https://models.readyplayer.me/YOUR_AVATAR_ID.glb";
+```
+
+## Git Setup and Version Control
+
+If you want to manage your own version of this project using Git:
+
+1. Initialize Git repository (if not already done):
+
+   ```
+   git init
+   ```
+
+2. Check the status of your files:
+
+   ```
+   git status
+   ```
+
+3. Add files to staging:
+
+   ```
+   git add .
+   ```
+
+4. Commit your changes:
+
+   ```
+   git commit -m "Initial commit"
+   ```
+
+5. Create a remote repository on GitHub or similar service
+
+6. Add the remote repository:
+
+   ```
+   git remote add origin https://github.com/yourusername/your-repository-name.git
+   ```
+
+7. Push your changes:
+
+   ```
+   git push -u origin main
+   ```
+
+8. For future updates:
+
+   ```
+   git add .
+   git commit -m "Description of changes"
+   git push
+   ```
 
 ## Usage
 
-1. Stand in front of your webcam, ensuring your full body is visible.
+1. Stand in front of your webcam (or use a video file), ensuring your full body is visible.
 2. The application will detect your pose and display:
 
    - Top: MediaPipe pose detection output
@@ -150,18 +233,21 @@ The system processes motion in several stages:
 ## Project Structure
 
 - `backend_process/scripts/`
-  - `capture.py` - Main entry point, handles webcam capture and UI display
+  - `capture.py` - Main entry point, handles webcam/video capture and UI display
   - `processing.py` - Core processing logic for keypoint extraction and visualization
   - `quat_cal.py` - Handles quaternion calculations for rotational data
 - `backend_process/dependencies/` - Python virtual environment (created during setup)
-- `backend_process/models/` - Directory for model files
+- `backend_process/models/` - Directory for model files (`dnn_model.pth`)
+- `backend_process/videos/` - Place for storing video files (created automatically)
 - `websocket_server.py` - Handles WebSocket communication with the frontend
-- `simple_serve.py` - Simple HTTP server for the frontend
+- `video_websocket.py` - Handles streaming video frames to frontend
 - `frontend_dis/` - Frontend files for 3D visualization:
   - `index.html` - Main frontend page
   - `canva.js` - Canvas and Three.js initialization
   - `glb-model.js` - 3D model handling and animation
-- `models/dnn_model.pth` - Pre-trained neural network for pose correction
+  - `live-reload.js` - Auto-refresh functionality for development
+- `run.bat` - Windows batch file for easy startup
+- `videos/` - Alternative location for video files
 
 ## Technical Details
 
@@ -193,9 +279,10 @@ We implement a Kalman filter for each keypoint to reduce noise and jitter:
 
 ### WebSocket Communication
 
-- The backend sends 17-keypoint data as JSON via WebSocket
+- The backend sends 17-keypoint data and DNN status via WebSocket (port 8765)
+- Video frames are streamed via a separate WebSocket (port 8766)
 - The frontend receives this data and applies it to the 3D model
-- 60Hz update rate for real-time performance
+- 50Hz update rate for real-time performance
 
 ## Troubleshooting
 
@@ -204,8 +291,15 @@ Common issues:
 - **No video feed**: Check if your webcam is connected and accessible
 - **Poor detection**: Ensure good lighting and that your full body is visible
 - **No model movement**: Check WebSocket connection status in browser console
-- **DNN correction fails**: Verify the model file exists in correct location
+- **DNN correction fails**: Verify the model file exists in `backend_process/models/`
 - **Missing dependencies**: Make sure the virtual environment is activated and all packages are installed
+- **Live Server not refreshing**: Use the buttons in VS Code or toggle focus on the window
+
+If Live Server isn't auto-refreshing:
+
+1. Make sure the `live-reload.js` script is loaded in the HTML
+2. Try clicking into another application window and back
+3. Manually refresh once to trigger the auto-refresh mechanism
 
 ## Contributing
 

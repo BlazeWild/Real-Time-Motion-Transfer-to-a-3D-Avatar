@@ -50,6 +50,7 @@ let keypointsFromPython = null;
 let websocket = null;
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
+let isDnnEnabled = true; // Track whether DNN is being used
 
 // Load the 3D model
 loadModel();
@@ -57,12 +58,52 @@ loadModel();
 // Set up WebSocket connection
 setupWebSocket();
 
+// Add keyboard event listener for DNN toggle with 'd' key
+document.addEventListener("keydown", (event) => {
+  if (event.key === "d" || event.key === "D") {
+    // Toggle DNN mode directly in the frontend
+    isDnnEnabled = !isDnnEnabled;
+    console.log(
+      `DNN mode toggled in frontend: ${isDnnEnabled ? "enabled" : "disabled"}`
+    );
+
+    // Update DNN status indicator in UI
+    updateDnnStatusIndicator();
+
+    // Update model if we have keypoints
+    if (keypointsFromPython && model) {
+      // Re-transform existing keypoints with the new DNN setting
+      for (const key in keypointsFromPython) {
+        if (
+          key !== "dnn_enabled" &&
+          key in jointPositions &&
+          Array.isArray(keypointsFromPython[key])
+        ) {
+          const point = keypointsFromPython[key];
+          // Apply coordinate transformation based on current DNN mode
+          if (isDnnEnabled) {
+            jointPositions[key] = [-point[0], point[1], -point[2]];
+          } else {
+            jointPositions[key] = [point[0], -point[1], -point[2]];
+          }
+        }
+      }
+      // Update model with new transformations
+      updateModelWithCalculatedQuaternions();
+    }
+  }
+});
+
 // Function to connect to WebSocket server
 function setupWebSocket() {
   if (reconnectAttempts >= maxReconnectAttempts) {
     console.error(
       "Max reconnect attempts reached. Please check if the backend server is running."
     );
+
+    // Add auto-refresh - reload the page after max reconnect attempts
+    console.log("Reloading page to attempt fresh connection...");
+    setTimeout(() => window.location.reload(), 3000);
     return;
   }
 
@@ -82,6 +123,12 @@ function setupWebSocket() {
       console.log("Connected to WebSocket server");
       reconnectAttempts = 0; // Reset the reconnect counter on successful connection
 
+      // If this is a reconnection, refresh the page to ensure clean state
+      if (window.wasDisconnected) {
+        console.log("Reconnected after disconnection. Refreshing page...");
+        setTimeout(() => window.location.reload(), 1000);
+      }
+
       // Dispatch event for UI updates
       document.dispatchEvent(
         new CustomEvent("websocketStatusChanged", {
@@ -95,24 +142,77 @@ function setupWebSocket() {
       try {
         const data = JSON.parse(event.data);
 
-        // Log the keypoints data to console (uncomment for debugging)
-        // console.log("Received 17 keypoints from Python:", data);
+        // Track if this is a video frame update
+        const isVideoUpdate = data.hasOwnProperty("timestamp");
+
+        // Check if the message includes DNN status information
+        if (data.hasOwnProperty("dnn_enabled")) {
+          isDnnEnabled = data.dnn_enabled;
+          console.log(
+            `DNN mode changed: ${isDnnEnabled ? "enabled" : "disabled"}`
+          );
+
+          // Update DNN status indicator in UI
+          updateDnnStatusIndicator();
+        }
 
         // Store the keypoints for reference
         keypointsFromPython = data;
 
-        // Update joint positions with the received keypoints, applying coordinate transformation (-x, y, -z)
+        // Log keypoint updates occasionally
+        if (
+          Object.keys(data).length > 1 &&
+          (Math.random() < 0.05 || isVideoUpdate)
+        ) {
+          console.log(
+            `Received keypoints update (${
+              isVideoUpdate ? "video" : "webcam"
+            }) with ${Object.keys(data).length} points`
+          );
+        }
+
+        // Update joint positions with the received keypoints, applying coordinate transformation
         if (Object.keys(data).length > 0) {
+          let hasValidKeypoints = false;
+          let validPointCount = 0;
+
           for (const key in data) {
-            if (key in jointPositions) {
+            if (
+              key !== "dnn_enabled" &&
+              key !== "timestamp" &&
+              key in jointPositions
+            ) {
               const point = data[key];
-              // Transform coordinates: (-x, y, -z)
-              jointPositions[key] = [-point[0], point[1], -point[2]];
+              if (Array.isArray(point) && point.length === 3) {
+                hasValidKeypoints = true;
+                validPointCount++;
+
+                // Apply different coordinate transformation depending on DNN mode
+                if (isDnnEnabled) {
+                  // When DNN is used: (-x, y, -z)
+                  jointPositions[key] = [-point[0], point[1], -point[2]];
+                } else {
+                  // When DNN is NOT used: make sure orientation is correct
+                  jointPositions[key] = [point[0], -point[1], -point[2]];
+                }
+              }
             }
           }
 
-          // Update the model with newly calculated quaternions
-          if (model) {
+          // Log when we find valid keypoints
+          if (hasValidKeypoints && isVideoUpdate && validPointCount > 10) {
+            console.log(
+              `Applying ${validPointCount} valid keypoints from video to model`
+            );
+          }
+
+          // Update the model with newly calculated quaternions if we have valid keypoints
+          if (model && hasValidKeypoints) {
+            // For video updates, make sure we refresh the model
+            if (isVideoUpdate) {
+              // Force a more thorough model update for video frames
+              model.updateMatrixWorld(true);
+            }
             updateModelWithCalculatedQuaternions();
           }
         }
@@ -123,10 +223,20 @@ function setupWebSocket() {
 
     // Handle errors
     websocket.addEventListener("error", (event) => {
-      console.error("WebSocket error:", event);
+      console.error("WebSocket error details:", {
+        type: event.type,
+        target: event.target.url,
+      });
       console.warn(
-        "No keypoints will be received. Make sure the Python script is running."
+        "No keypoints will be received. Make sure the Python script is running at ws://localhost:8765"
       );
+
+      // Try to provide more helpful diagnostics
+      if (window.location.protocol === "https:") {
+        console.error(
+          "WebSocket connection from HTTPS to WS is blocked. Use HTTP instead."
+        );
+      }
 
       // Dispatch event for UI updates
       document.dispatchEvent(
@@ -141,6 +251,9 @@ function setupWebSocket() {
       console.log(
         `WebSocket connection closed (code: ${event.code}). Attempting to reconnect in 3 seconds...`
       );
+
+      // Mark that we were disconnected (for auto-refresh on reconnect)
+      window.wasDisconnected = true;
 
       // Dispatch event for UI updates
       document.dispatchEvent(
@@ -217,8 +330,10 @@ function updateModelWithCalculatedQuaternions() {
   model.updateMatrixWorld(true);
 
   // The skeleton helper automatically updates when the bones update
+  // THREE.SkeletonHelper doesn't have an update() method, it auto-updates with the scene
   if (skeletonHelper) {
-    skeletonHelper.update();
+    // No need to call update() - THREE.SkeletonHelper updates automatically
+    // when the bones it's connected to are updated
   }
 
   // Log the calculated quaternions (uncomment for debugging)
@@ -327,3 +442,17 @@ function loadModel() {
     }
   );
 }
+
+// Add this function at the end of the file, before loadModel()
+function updateDnnStatusIndicator() {
+  const dnnStatus = document.getElementById("dnn-status");
+  if (dnnStatus) {
+    dnnStatus.textContent = isDnnEnabled ? "DNN: ON" : "DNN: OFF";
+    dnnStatus.style.backgroundColor = isDnnEnabled ? "#3b82f6" : "#9ca3af";
+  }
+}
+
+// Call initially to set the correct status
+document.addEventListener("DOMContentLoaded", () => {
+  updateDnnStatusIndicator();
+});
