@@ -15,7 +15,7 @@ The system detects body movements from webcam or video input and transfers them 
 ## Features
 
 - Real-time pose detection from webcam or video file input
-- Custom DNN model for pose correction and refinement
+- Custom NN model for pose correction and refinement
 - 17-keypoint skeleton mapping from detected landmarks
 - Kalman filtering for smoother motion
 - 3D visualization using Three.js
@@ -257,7 +257,7 @@ The system processes motion in several stages:
 
 ### Neural Network Architecture
 
-The DNN model consists of a multi-layer perceptron with the following architecture:
+The NN model consists of a multi-layer perceptron with the following architecture:
 
 - Input: 36 values (12 keypoints × 3 coordinates)
 - Hidden layers: 72 → 64 → 50 → 54 neurons
@@ -295,7 +295,7 @@ Common issues:
 - **No video feed**: Check if your webcam is connected and accessible
 - **Poor detection**: Ensure good lighting and that your full body is visible
 - **No model movement**: Check WebSocket connection status in browser console
-- **DNN correction fails**: Verify the model file exists in `backend_process/models/`
+- **NN correction fails**: Verify the model file exists in `backend_process/models/`
 - **Missing dependencies**: Make sure the virtual environment is activated and all packages are installed
 - **Live Server not refreshing**: Use the buttons in VS Code or toggle focus on the window
 
