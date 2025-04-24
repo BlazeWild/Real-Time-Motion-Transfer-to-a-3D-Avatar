@@ -153,55 +153,6 @@ const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";
 const modelPath = "https://models.readyplayer.me/YOUR_AVATAR_ID.glb";
 ```
 
-## Git Setup and Version Control
-
-If you want to manage your own version of this project using Git:
-
-1. Initialize Git repository (if not already done):
-
-   ```
-   git init
-   ```
-
-2. Check the status of your files:
-
-   ```
-   git status
-   ```
-
-3. Add files to staging:
-
-   ```
-   git add .
-   ```
-
-4. Commit your changes:
-
-   ```
-   git commit -m "Initial commit"
-   ```
-
-5. Create a remote repository on GitHub or similar service
-
-6. Add the remote repository:
-
-   ```
-   git remote add origin https://github.com/yourusername/your-repository-name.git
-   ```
-
-7. Push your changes:
-
-   ```
-   git push -u origin main
-   ```
-
-8. For future updates:
-
-   ```
-   git add .
-   git commit -m "Description of changes"
-   git push
-   ```
 
 ## Usage
 
@@ -309,13 +260,10 @@ If Live Server isn't auto-refreshing:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgements
 
 - [MediaPipe](https://github.com/google/mediapipe) for pose detection
+- [PyTorch](https://pytorch.org/) for neural network implementation
 - [Three.js](https://threejs.org/) for 3D visualization
 - [ReadyPlayerMe](https://readyplayer.me/) for 3D avatar models
-- [PyTorch](https://pytorch.org/) for neural network implementation
