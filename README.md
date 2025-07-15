@@ -1,5 +1,8 @@
 # Real-Time 3D Motion Transfer to Avatar
 
+[![Medium Blog](https://img.shields.io/badge/Medium-Blog-12100E?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@blazewild215/real-time-motion-capture-animating-your-3d-avatar-with-live-tracking-f5690fe150e5)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
 A complete system for capturing human motion from webcam or video and transferring it to a 3D avatar in real-time using MediaPipe, DNN and Three.js.
 
 Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://github.com/nepalashim)
