@@ -26,12 +26,6 @@ venv/
 ENV/
 env/
 
-# Models and large files
-*.pth
-*.h5
-*.onnx
-*.pt
-
 # IDE and editor files
 .idea/
 .vscode/
