@@ -65,41 +65,49 @@ The system detects body movements from webcam or video input and transfers them 
 
 3. Install required Python packages:
 
-   ```
-   pip install -r requirements.txt
+   ```bash
+   pip install -r backend_process/requirements.txt
    ```
 
-4. If you're using Windows, you can run the `run.bat` file to start the application.
+4. **Important for Windows users:** The `run.bat` file must be run from Git Bash (not Command Prompt or PowerShell).
+   From the project root directory, run:
+
+   ```bash
+   ./run.bat
+   ```
+
    For Mac/Linux users, follow the manual startup process below.
 
-## Quick Start (Windows)
+## Quick Start (Windows with Git Bash)
 
-1. Run the `run.bat` file by double-clicking or from command prompt:
+1. Open Git Bash in the project root directory
 
+2. Run the `run.bat` file:
+
+   ```bash
+   ./run.bat
    ```
-   run.bat
-   ```
 
-2. Choose your input source:
+3. Choose your input source:
 
    - Option 1: Webcam (default)
    - Option 2: Video file (you can provide just the video name like "video" and the system will find it automatically)
 
-3. For video files, you can configure:
+4. For video files, you can configure:
 
    - Playback speed (delay between frames)
    - Looping options
    - Frame rate for processing
    - Debug mode for better model updates
 
-4. The system will:
+5. The system will:
 
    - Activate the virtual environment
    - Start the Python backend for pose detection
    - Open the frontend file in VS Code
    - Provide instructions for opening with Live Server
 
-5. In VS Code, right-click on `frontend_dis/index.html` and select "Open with Live Server"
+6. In VS Code, right-click on `frontend_dis/index.html` and select "Open with Live Server"
 
 ## Manual Startup
 
@@ -158,7 +166,6 @@ const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";
 const modelPath = "https://models.readyplayer.me/YOUR_AVATAR_ID.glb";
 ```
 
-
 ## Usage
 
 1. Stand in front of your webcam (or use a video file), ensuring your full body is visible.
@@ -206,8 +213,21 @@ The system processes motion in several stages:
   - `canva.js` - Canvas and Three.js initialization
   - `glb-model.js` - 3D model handling and animation
   - `live-reload.js` - Auto-refresh functionality for development
-- `run.bat` - Windows batch file for easy startup
+- `streamlit_app/` - **Alternative Streamlit-based UI** (see separate README in folder)
+  - Self-contained app with web interface
+  - Uses `uv` package manager
+  - No need for Live Server
+- `run.bat` - Windows batch file for easy startup (requires Git Bash)
 - `videos/` - Alternative location for video files
+
+## Alternative: Streamlit UI
+
+For a simpler, web-based interface, check out the `streamlit_app/` folder. It provides:
+
+- Modern web UI built with Streamlit
+- All-in-one interface without needing Live Server
+- Same pose detection and processing features
+- See `streamlit_app/README.md` for setup instructions
 
 ## Technical Details
 
@@ -265,13 +285,9 @@ If Live Server isn't auto-refreshing:
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-
 ## Acknowledgements
 
 - [MediaPipe](https://github.com/google/mediapipe) for pose detection
 - [PyTorch](https://pytorch.org/) for neural network implementation
 - [Three.js](https://threejs.org/) for 3D visualization
 - [ReadyPlayerMe](https://readyplayer.me/) for 3D avatar models
-
-
-
