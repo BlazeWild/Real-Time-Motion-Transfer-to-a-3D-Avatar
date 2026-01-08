@@ -8,9 +8,11 @@ A complete system for capturing human motion from webcam or video and transferri
 Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://github.com/nepalashim)
 
 ## Demo
-[![Watch the Demo]](https://www.youtube.com/watch?v=PxOQFlTwadE)
+
 <div align="center">
-  <img src=".github/assets/demo/DEMO.png" alt="System Demo" width="100%">
+  <a href="https://www.youtube.com/watch?v=PxOQFlTwadE">
+    <img src="https://img.youtube.com/vi/PxOQFlTwadE/maxresdefault.jpg" alt="Watch the Demo Video" width="100%">
+  </a>
 </div>
 
 The system detects body movements from webcam or video input and transfers them in real-time to a 3D avatar. You can use your own ReadyPlayerMe avatar and switch between webcam and video file inputs.
@@ -270,5 +272,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 - [PyTorch](https://pytorch.org/) for neural network implementation
 - [Three.js](https://threejs.org/) for 3D visualization
 - [ReadyPlayerMe](https://readyplayer.me/) for 3D avatar models
+
 
 
