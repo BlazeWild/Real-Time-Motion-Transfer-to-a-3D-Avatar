@@ -5,7 +5,19 @@ REM Create frontend_dis directory if it doesn't exist
 if not exist "frontend_dis" mkdir frontend_dis
 
 REM Activate the Python environment if needed
-call backend_process/dependencies/scripts/activate
+if exist "venv\Scripts\activate.bat" (
+    call venv\Scripts\activate.bat
+) else if exist "backend_process\dependencies\Scripts\activate.bat" (
+    call backend_process\dependencies\Scripts\activate.bat
+) else (
+    echo ERROR: Virtual environment not found!
+    echo Please create a virtual environment first:
+    echo python -m venv venv
+    echo Then install requirements:
+    echo venv\Scripts\activate ^&^& pip install -r backend_process\requirements.txt
+    pause
+    exit /b 1
+)
 
 REM Install websockets library if needed
 pip install websockets

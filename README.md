@@ -40,27 +40,25 @@ The system detects body movements from webcam or video input and transfers them 
 
 1. Clone this repository:
 
-   ```
-   git clone https://github.com/yourusername/real-time-avatar-motion.git
-   cd real-time-avatar-motion
+   ```bash
+   git clone https://github.com/BlazeWild/Real-Time-Motion-Transfer-to-a-3D-Avatar.git
+   cd Real-Time-Motion-Transfer-to-a-3D-Avatar
    ```
 
-2. Create a virtual environment inside the backend_process folder:
+2. Create a virtual environment in the main project directory:
 
    On Windows:
 
-   ```
-   mkdir -p backend_process\dependencies
-   python -m venv backend_process\dependencies
-   backend_process\dependencies\Scripts\activate
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
    ```
 
    On macOS/Linux:
 
-   ```
-   mkdir -p backend_process/dependencies
-   python -m venv backend_process/dependencies
-   source backend_process/dependencies/bin/activate
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
    ```
 
 3. Install required Python packages:
@@ -115,14 +113,14 @@ The system detects body movements from webcam or video input and transfers them 
 
    On Windows:
 
-   ```
-   backend_process\dependencies\Scripts\activate
+   ```bash
+   venv\Scripts\activate
    ```
 
    On macOS/Linux:
 
-   ```
-   source backend_process/dependencies/bin/activate
+   ```bash
+   source venv/bin/activate
    ```
 
 2. Start the Python backend:

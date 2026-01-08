@@ -26,8 +26,6 @@ venv/
 ENV/
 env/
 streamlit_app/
-
-# IDE and editor files
 .idea/
 .vscode/
 *.swp

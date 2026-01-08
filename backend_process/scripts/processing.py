@@ -4,17 +4,22 @@ import torch
 import torch.nn as nn
 import os
 import sys
-import mediapipe as mp
+
+# Try importing mediapipe with different methods
+try:
+    import mediapipe as mp
+    mp_pose = mp.solutions.pose
+    mp_drawing = mp.solutions.drawing_utils
+except AttributeError:
+    # Fallback for newer mediapipe versions
+    from mediapipe.python.solutions import pose as mp_pose
+    from mediapipe.python.solutions import drawing_utils as mp_drawing
 
 # Add the project root to the Python path to allow imports
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(script_dir))
 if project_root not in sys.path:
     sys.path.append(project_root)
-
-# Initialize MediaPipe Pose for drawing functions and constants
-mp_pose = mp.solutions.pose
-mp_drawing = mp.solutions.drawing_utils
 
 # Explicitly set device to CPU
 device = torch.device('cpu')
