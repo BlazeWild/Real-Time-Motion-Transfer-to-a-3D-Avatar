@@ -1,291 +1,365 @@
-# Real-Time 3D Motion Transfer to Avatar
+<div align="center">
+
+# Real-Time Motion Transfer to a 3D Avatar
+
+**Capture human motion from a webcam or video and drive a 3D avatar in real time.**
 
 [![Medium Blog](https://img.shields.io/badge/Medium-Blog-12100E?style=for-the-badge&logo=medium&logoColor=white)](https://medium.com/@blazewild215/real-time-motion-capture-animating-your-3d-avatar-with-live-tracking-f5690fe150e5)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.8--3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=threedotjs&logoColor=white)](https://threejs.org/)
 
-A complete system for capturing human motion from webcam or video and transferring it to a 3D avatar in real-time using MediaPipe, DNN and Three.js.
+Built by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://github.com/nepalashim)
 
-Created by [Ashok BK](https://github.com/blazewild) and [Ashim Nepal](https://github.com/nepalashim)
+<a href="https://www.youtube.com/watch?v=PxOQFlTwadE">
+  <img src="https://img.youtube.com/vi/PxOQFlTwadE/maxresdefault.jpg" alt="Watch the demo video" width="100%">
+</a>
 
-## Demo
+<sub>▶ Click the image to watch the demo on YouTube</sub>
 
-<div align="center">
-  <a href="https://www.youtube.com/watch?v=PxOQFlTwadE">
-    <img src="https://img.youtube.com/vi/PxOQFlTwadE/maxresdefault.jpg" alt="Watch the Demo Video" width="100%">
-  </a>
 </div>
 
-The system detects body movements from webcam or video input and transfers them in real-time to a 3D avatar. You can use your own ReadyPlayerMe avatar and switch between webcam and video file inputs.
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [How It Works](#how-it-works)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Running the App](#running-the-app)
+- [Usage](#usage)
+- [Using Your Own Avatar](#using-your-own-avatar)
+- [Technical Details](#technical-details)
+- [Project Structure](#project-structure)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+
+---
+
+## Overview
+
+This project captures body movement from a webcam or a video file and maps it onto a rigged 3D avatar in the browser, in real time.
+
+A Python backend detects the pose with **MediaPipe**, refines the keypoints with a custom **neural network**, smooths them with a **Kalman filter**, and streams the result over **WebSockets**. A **Three.js** frontend receives the data and animates a [Ready Player Me](https://readyplayer.me/) avatar.
 
 ## Features
 
-- Real-time pose detection from webcam or video file input
-- Custom NN model for pose correction and refinement
-- 17-keypoint skeleton mapping from detected landmarks
-- Kalman filtering for smoother motion
-- 3D visualization using Three.js
-- Real-time motion transfer to 3D avatar models
-- WebSocket communication between detection and visualization components
-- Video or webcam input options with easy configuration
+- **Live or recorded input:** use a webcam or any video file
+- **Neural pose refinement:** a custom PyTorch model corrects keypoint positions and depth
+- **17-keypoint skeleton:** MediaPipe landmarks are mapped to a standard humanoid joint hierarchy
+- **Smooth motion:** a per-joint Kalman filter reduces jitter
+- **Browser-based 3D view:** the avatar is rendered with Three.js and WebGL
+- **Custom avatars:** swap in your own Ready Player Me avatar by changing one URL
+- **Runtime toggles:** turn the Kalman filter and the neural correction on and off while the app is running
 
-## System Requirements
+## How It Works
 
-- Python 3.8+ with pip
-- Web browser with WebGL support
-- VS Code with Live Server extension (recommended for frontend)
-- Webcam (for live capture) or video files (for pre-recorded motion)
-- Internet connection (for loading avatar models)
-
-## Installation
-
-1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/BlazeWild/Real-Time-Motion-Transfer-to-a-3D-Avatar.git
-   cd Real-Time-Motion-Transfer-to-a-3D-Avatar
-   ```
-
-2. Create a virtual environment in the main project directory:
-
-   On Windows:
-
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate
-   ```
-
-   On macOS/Linux:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   ```
-
-3. Install required Python packages:
-
-   ```bash
-   pip install -r backend_process/requirements.txt
-   ```
-
-4. **Important for Windows users:** The `run.bat` file must be run from Git Bash (not Command Prompt or PowerShell).
-   From the project root directory, run:
-
-   ```bash
-   ./run.bat
-   ```
-
-   For Mac/Linux users, follow the manual startup process below.
-
-## Quick Start (Windows with Git Bash)
-
-1. Open Git Bash in the project root directory
-
-2. Run the `run.bat` file:
-
-   ```bash
-   ./run.bat
-   ```
-
-3. Choose your input source:
-
-   - Option 1: Webcam (default)
-   - Option 2: Video file (you can provide just the video name like "video" and the system will find it automatically)
-
-4. For video files, you can configure:
-
-   - Playback speed (delay between frames)
-   - Looping options
-   - Frame rate for processing
-   - Debug mode for better model updates
-
-5. The system will:
-
-   - Activate the virtual environment
-   - Start the Python backend for pose detection
-   - Open the frontend file in VS Code
-   - Provide instructions for opening with Live Server
-
-6. In VS Code, right-click on `frontend_dis/index.html` and select "Open with Live Server"
-
-## Manual Startup
-
-1. Activate the virtual environment:
-
-   On Windows:
-
-   ```bash
-   venv\Scripts\activate
-   ```
-
-   On macOS/Linux:
-
-   ```bash
-   source venv/bin/activate
-   ```
-
-2. Start the Python backend:
-
-   For webcam:
-
-   ```
-   python backend_process/scripts/capture.py
-   ```
-
-   For video file:
-
-   ```
-   python backend_process/scripts/capture.py --video "path_to_video.mp4" --delay 1 --frame-rate 30
-   ```
-
-3. Serve the frontend:
-
-   - Using VS Code Live Server: Right-click on `frontend_dis/index.html` and select "Open with Live Server"
-   - Or using Python's built-in server: `python -m http.server 8000 --directory frontend_dis`
-
-## Using Your Own 3D Avatar
-
-You can easily use your own custom avatar from ReadyPlayerMe:
-
-1. Visit [ReadyPlayerMe](https://readyplayer.me/) and create your custom avatar
-2. After creating your avatar, click "Download" and choose "glTF/GLB"
-3. You can also just copy the URL from the share link (ends with .glb)
-4. Open `frontend_dis/glb-model.js` in a text editor
-5. Find line 45 with: `const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";`
-6. Replace the URL with your avatar's URL
-7. Save the file and refresh the browser window
-
-Example:
-
-```javascript
-// Replace this
-const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";
-
-// With your avatar URL
-const modelPath = "https://models.readyplayer.me/YOUR_AVATAR_ID.glb";
+```mermaid
+flowchart LR
+    A[Webcam / Video] --> B[MediaPipe Pose<br/>33 landmarks]
+    B --> C[Select 12<br/>key joints]
+    C --> D[DNN<br/>correction]
+    D --> E[Orientation<br/>quaternions]
+    E --> F[17-keypoint<br/>skeleton]
+    F --> G[Kalman<br/>filter]
+    G -- WebSocket :8765 --> H[Three.js<br/>3D avatar]
 ```
+
+| Stage | Description |
+| --- | --- |
+| **1. Pose detection** | MediaPipe (BlazePose) extracts 33 world landmarks from each frame. |
+| **2. Landmark selection** | 12 core joints are kept: shoulders, elbows, wrists, hips, knees and ankles. |
+| **3. DNN correction** | A neural network refines the 12 keypoints for more accurate depth. |
+| **4. Orientation enrichment** | Local quaternions are computed for 8 joints to recover rotation along the limb (twist). |
+| **5. Skeleton mapping** | Derived joints (hip center, spine, neck) are added to build a 17-keypoint hierarchy. |
+| **6. Kalman filtering** | Positions are smoothed over time to reduce jitter. |
+| **7. Avatar animation** | Joint rotations are applied to the avatar's skeleton in the browser. |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- **Python 3.8–3.11** (the pinned dependencies do not support 3.12 or newer)
+- A modern browser with **WebGL** support
+- A **webcam**, or a video file to use as input
+- An internet connection (the avatar model is loaded from Ready Player Me)
+- *Recommended:* [VS Code](https://code.visualstudio.com/) with the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension
+- *Windows only:* [Git Bash](https://git-scm.com/downloads) to use the launcher script
+
+### Installation
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/BlazeWild/Real-Time-Motion-Transfer-to-a-3D-Avatar.git
+cd Real-Time-Motion-Transfer-to-a-3D-Avatar
+```
+
+**2. Create and activate a virtual environment** in the project root
+
+<details open>
+<summary><b>Windows</b></summary>
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+</details>
+
+<details open>
+<summary><b>macOS / Linux</b></summary>
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+</details>
+
+**3. Install the dependencies**
+
+```bash
+pip install -r backend_process/requirements.txt
+```
+
+### Running the App
+
+#### Option A: Quick start (Windows)
+
+> [!IMPORTANT]
+> Run `run.bat` from **Git Bash**, not Command Prompt or PowerShell.
+
+```bash
+./run.bat
+```
+
+The launcher will:
+
+1. Activate the virtual environment
+2. Ask you to choose an input source: **webcam** (default) or **video file**
+3. For video input, ask for playback delay, looping, target frame rate and an optional debug mode
+4. Start the Python backend in a new window
+5. Open `frontend_dis/index.html` in VS Code
+
+Then, in VS Code, right-click `frontend_dis/index.html` and choose **Open with Live Server**.
+
+> [!TIP]
+> When asked for a video, you can type just its name (for example `video`). The launcher lists the videos it finds in the common folders, such as `backend_process/videos/`.
+
+#### Option B: Manual start (all platforms)
+
+**1. Start the backend** from the project root, with the virtual environment active:
+
+```bash
+# Webcam
+python backend_process/scripts/capture.py
+
+# Video file
+python backend_process/scripts/capture.py --video backend_process/videos/video.mp4 --delay 1 --frame-rate 30 --loop
+```
+
+**2. Serve the frontend** with either of these:
+
+- **VS Code Live Server:** right-click `frontend_dis/index.html` and choose **Open with Live Server**
+- **Python's built-in server:**
+  ```bash
+  python -m http.server 8000 --directory frontend_dis
+  ```
+  Then open <http://localhost:8000> in your browser.
+
+#### Command-line options
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `--video <path>` | *(webcam)* | Path to a video file. If omitted, the webcam is used. |
+| `--delay <ms>` | `1` | Delay between frames in milliseconds (video only). Higher values play the video more slowly. |
+| `--frame-rate <fps>` | `30` | Target processing frame rate. |
+| `--loop` | off | Restart the video when it reaches the end. |
+
+---
 
 ## Usage
 
-1. Stand in front of your webcam (or use a video file), ensuring your full body is visible.
-2. The application will detect your pose and display:
+1. Stand in front of the camera with your **whole body in view**, or start a video.
+2. The backend window shows two views:
+   - **Top:** raw MediaPipe pose detection
+   - **Bottom:** the processed 17-keypoint skeleton
+3. The avatar in the browser follows the movement in real time.
 
-   - Top: MediaPipe pose detection output
-   - Bottom: Processed 17-keypoint skeleton
-   - Browser: 3D avatar following your movements
+### Keyboard controls
 
-3. Keyboard controls:
-   - `k`: Toggle Kalman filter for smoother movement
-   - `d`: Toggle DNN correction
-   - `q`: Quit the application
-   - `s`: Save a screenshot
+Focus the backend's OpenCV window, then press:
 
-## Processing Pipeline
+| Key | Action |
+| :---: | --- |
+| <kbd>k</kbd> | Toggle the Kalman filter |
+| <kbd>d</kbd> | Toggle the DNN correction |
+| <kbd>s</kbd> | Save a screenshot |
+| <kbd>q</kbd> | Quit |
 
-The system processes motion in several stages:
+---
 
-1. **MediaPipe Pose Detection**: Captures 33 pose world landmarks using Google's MediaPipe/Blazepose library
-2. **Landmark Selection**: Extracts 12 essential keypoints from the 33 MediaPipe landmarks:
-   - Shoulders, elbows, wrists
-   - Hips, knees, ankles
-3. **DNN Correction**: Applies a neural network to correct and refine keypoint positions for accurate depth
-4. **Orientation Enrichment**: Calculates local quaternion for 8 joints to apply the longitudinal rotation
-5. **17-Keypoint Mapping**: Creates a full skeleton by:
-   - Adding calculated joints (hips center, spine, neck)
-   - Organizing joints in a standard hierarchy
-6. **Kalman Filtering**: Applies statistical smoothing to reduce jitter and improve motion quality
-7. **3D Model Animation**: Transfers processed joint rotations to the avatar's skeleton
+## Using Your Own Avatar
 
-## Project Structure
+1. Create an avatar at [Ready Player Me](https://readyplayer.me/).
+2. Copy its `.glb` URL from the share link, or download it as **glTF/GLB**.
+3. Open [`frontend_dis/glb-model.js`](frontend_dis/glb-model.js) and find the `modelPath` constant (around line 45).
+4. Replace the URL with your own, then refresh the browser.
 
-- `backend_process/scripts/`
-  - `capture.py` - Main entry point, handles webcam/video capture and UI display
-  - `processing.py` - Core processing logic for keypoint extraction and visualization
-  - `quat_cal.py` - Handles quaternion calculations for rotational data
-- `backend_process/dependencies/` - Python virtual environment (created during setup)
-- `backend_process/models/` - Directory for model files (`dnn_model.pth`)
-- `backend_process/videos/` - Place for storing video files (created automatically)
-- `websocket_server.py` - Handles WebSocket communication with the frontend
-- `video_websocket.py` - Handles streaming video frames to frontend
-- `frontend_dis/` - Frontend files for 3D visualization:
-  - `index.html` - Main frontend page
-  - `canva.js` - Canvas and Three.js initialization
-  - `glb-model.js` - 3D model handling and animation
-  - `live-reload.js` - Auto-refresh functionality for development
-- `streamlit_app/` - **Alternative Streamlit-based UI** (see separate README in folder)
-  - Self-contained app with web interface
-  - Uses `uv` package manager
-  - No need for Live Server
-- `run.bat` - Windows batch file for easy startup (requires Git Bash)
-- `videos/` - Alternative location for video files
+```javascript
+// Before
+const modelPath = "https://models.readyplayer.me/67be034c9fab1c21c486eb14.glb";
 
-## Alternative: Streamlit UI
+// After
+const modelPath = "https://models.readyplayer.me/YOUR_AVATAR_ID.glb";
+```
 
-For a simpler, web-based interface, check out the `streamlit_app/` folder. It provides:
-
-- Modern web UI built with Streamlit
-- All-in-one interface without needing Live Server
-- Same pose detection and processing features
-- See `streamlit_app/README.md` for setup instructions
+---
 
 ## Technical Details
 
-### Neural Network Architecture
+<details>
+<summary><b>Neural network architecture</b></summary>
 
-The NN model consists of a multi-layer perceptron with the following architecture:
+<br>
 
-- Input: 36 values (12 keypoints × 3 coordinates)
-- Hidden layers: 72 → 64 → 50 → 54 neurons
-- Output: 36 values (12 corrected keypoints × 3 coordinates)
+A fully connected network (MLP) with ReLU activations refines the selected keypoints:
 
-### 17-Keypoint Skeleton
+| Layer | Size |
+| --- | --- |
+| Input | 36 (12 keypoints × 3 coordinates) |
+| Hidden layers | 72 → 64 → 50 → 54 |
+| Output | 36 (12 corrected keypoints × 3 coordinates) |
 
-The system maps MediaPipe's output to a 17-keypoint skeleton including:
+The pretrained weights are in `backend_process/models/dnn_model.pth`.
 
-- Hips (center)
-- Spine (3 points)
-- Head and neck
-- Arms and hands (6 points)
-- Legs and feet (6 points)
+</details>
 
-### Kalman Filtering
+<details>
+<summary><b>17-keypoint skeleton</b></summary>
 
-We implement a Kalman filter for each keypoint to reduce noise and jitter:
+<br>
 
-- State variables: Position (x,y,z) and velocity
-- Observation: Raw keypoint positions
-- Process noise and measurement covariance are tuned for smooth motion
+| Region | Joints | Count |
+| --- | --- | :---: |
+| Core | `Hips` (center) | 1 |
+| Torso | `Spine1`, `Spine2` | 2 |
+| Head | `Neck`, `Head` | 2 |
+| Arms | `Arm`, `ForeArm`, `Hand` (left and right) | 6 |
+| Legs | `UpLeg`, `Leg`, `Foot` (left and right) | 6 |
+| **Total** | | **17** |
 
-### WebSocket Communication
+</details>
 
-- The backend sends 17-keypoint data and DNN status via WebSocket (port 8765)
-- Video frames are streamed via a separate WebSocket (port 8766)
-- The frontend receives this data and applies it to the 3D model
-- 50Hz update rate for real-time performance
+<details>
+<summary><b>Kalman filtering</b></summary>
+
+<br>
+
+Each keypoint has its own Kalman filter:
+
+- **State:** position `(x, y, z)` and velocity `(dx, dy, dz)`
+- **Measurement:** raw keypoint position
+- **Tuning:** the process and measurement noise are set for smooth motion with low lag
+
+</details>
+
+<details>
+<summary><b>WebSocket communication</b></summary>
+
+<br>
+
+| Channel | Port | Payload | Rate |
+| --- | --- | --- | --- |
+| Pose data | `8765` | 17-keypoint data and DNN status | ~50 Hz |
+| Video stream | `8766` | Encoded camera or video frames | ~30 FPS |
+
+The frontend reconnects automatically if the backend restarts.
+
+</details>
+
+---
+
+## Project Structure
+
+```text
+Real-Time-Motion-Transfer-to-a-3D-Avatar/
+├── backend_process/
+│   ├── scripts/
+│   │   ├── capture.py          # Entry point: webcam/video capture and OpenCV UI
+│   │   ├── processing.py       # Keypoint extraction, DNN correction, Kalman filtering
+│   │   └── quat_cal.py         # Quaternion and joint-rotation calculations
+│   ├── models/                 # Pretrained model weights (.pth)
+│   ├── videos/                 # Sample input videos
+│   ├── websocket_server.py     # Streams pose data to the frontend (port 8765)
+│   ├── video_websocket.py      # Streams video frames to the frontend (port 8766)
+│   ├── simple_serve.py         # Minimal HTTP server helper
+│   └── requirements.txt        # Python dependencies
+├── frontend_dis/
+│   ├── index.html              # Main page
+│   ├── canva.js                # Three.js scene and canvas setup
+│   ├── glb-model.js            # Avatar loading and animation
+│   ├── importmap.js            # ES module import map
+│   ├── three-shim.js           # Three.js compatibility shim
+│   ├── keypoints.json          # Keypoint definitions
+│   └── styles.css
+├── run.bat                     # Windows launcher (run from Git Bash)
+├── LICENSE
+└── README.md
+```
+
+---
 
 ## Troubleshooting
 
-Common issues:
+| Problem | Things to check |
+| --- | --- |
+| **No video feed** | Make sure the webcam is connected and no other app is using it. |
+| **Poor detection** | Improve the lighting and keep your whole body in frame. |
+| **Avatar doesn't move** | Make sure the backend is running, then look for WebSocket errors in the browser console. Serve the page over `http://`, not `https://`. |
+| **DNN correction fails** | Make sure `dnn_model.pth` is in `backend_process/models/`. |
+| **`ModuleNotFoundError`** | Activate the virtual environment and run commands from the **project root**. |
+| **Install fails** | Use Python 3.8–3.11. The pinned packages have no builds for newer versions. |
+| **Page doesn't update** | Hard-refresh the browser (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>) or restart Live Server. |
 
-- **No video feed**: Check if your webcam is connected and accessible
-- **Poor detection**: Ensure good lighting and that your full body is visible
-- **No model movement**: Check WebSocket connection status in browser console
-- **NN correction fails**: Verify the model file exists in `backend_process/models/`
-- **Missing dependencies**: Make sure the virtual environment is activated and all packages are installed
-- **Live Server not refreshing**: Use the buttons in VS Code or toggle focus on the window
-
-If Live Server isn't auto-refreshing:
-
-1. Make sure the `live-reload.js` script is loaded in the HTML
-2. Try clicking into another application window and back
-3. Manually refresh once to trigger the auto-refresh mechanism
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome.
+
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m "Add my feature"`
+4. Push the branch: `git push origin feature/my-feature`
+5. Open a pull request.
+
+For major changes, please open an issue first to discuss what you'd like to change.
+
+## License
+
+This project is released under the [MIT License](LICENSE).
 
 ## Acknowledgements
 
 - [MediaPipe](https://github.com/google/mediapipe) for pose detection
-- [PyTorch](https://pytorch.org/) for neural network implementation
-- [Three.js](https://threejs.org/) for 3D visualization
-- [ReadyPlayerMe](https://readyplayer.me/) for 3D avatar models
+- [PyTorch](https://pytorch.org/) for the neural network
+- [Three.js](https://threejs.org/) for 3D rendering
+- [Ready Player Me](https://readyplayer.me/) for the avatar models
+
+---
+
+<div align="center">
+
+If you find this project useful, please consider giving it a ⭐
+
+</div>
